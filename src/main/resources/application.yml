@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/board
+    username: root
+    password: 1234
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  profiles:
+    include: jwt
+
+logging:
+  level:
+    org:
+      apache:
+        coyote:
+          http11: debug
+      hiberante:
+        SQL: debug
+
+    boardexample:
+      myboard: info
