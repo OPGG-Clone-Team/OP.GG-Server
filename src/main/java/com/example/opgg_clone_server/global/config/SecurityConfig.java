@@ -1,12 +1,12 @@
-package com.example.opgg_clone_server.domain.global.config;
+package com.example.opgg_clone_server.global.config;
 
-import com.example.opgg_clone_server.domain.global.jwt.service.JwtService;
-import com.example.opgg_clone_server.domain.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
-import com.example.opgg_clone_server.domain.global.login.filter.JwtAuthenticationProcessingFilter;
-import com.example.opgg_clone_server.domain.global.login.handler.LoginFailureHandler;
-import com.example.opgg_clone_server.domain.global.login.handler.LoginSuccessJWTProvideHandler;
+import com.example.opgg_clone_server.global.jwt.service.JwtService;
+import com.example.opgg_clone_server.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
+import com.example.opgg_clone_server.global.login.filter.JwtAuthenticationProcessingFilter;
+import com.example.opgg_clone_server.global.login.handler.LoginFailureHandler;
+import com.example.opgg_clone_server.global.login.handler.LoginSuccessJWTProvideHandler;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
-import com.example.opgg_clone_server.domain.member.repository.service.LoginService;
+import com.example.opgg_clone_server.domain.member.repository.service.impl.LoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

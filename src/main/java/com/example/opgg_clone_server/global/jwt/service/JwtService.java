@@ -1,4 +1,4 @@
-package com.example.opgg_clone_server.domain.global.jwt.service;
+package com.example.opgg_clone_server.global.jwt.service;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

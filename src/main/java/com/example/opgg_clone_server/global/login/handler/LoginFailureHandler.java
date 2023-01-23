@@ -1,4 +1,4 @@
-package com.example.opgg_clone_server.domain.global.login.handler;
+package com.example.opgg_clone_server.global.login.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;

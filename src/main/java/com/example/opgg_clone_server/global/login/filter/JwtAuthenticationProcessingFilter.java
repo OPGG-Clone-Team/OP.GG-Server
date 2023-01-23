@@ -1,7 +1,7 @@
-package com.example.opgg_clone_server.domain.global.login.filter;
+package com.example.opgg_clone_server.global.login.filter;
 
 
-import com.example.opgg_clone_server.domain.global.jwt.service.JwtService;
+import com.example.opgg_clone_server.global.jwt.service.JwtService;
 import com.example.opgg_clone_server.domain.member.Member;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

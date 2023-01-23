@@ -5,6 +5,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.opgg_clone_server.domain.member.Member;
 import com.example.opgg_clone_server.domain.member.Role;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
+import com.example.opgg_clone_server.global.jwt.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

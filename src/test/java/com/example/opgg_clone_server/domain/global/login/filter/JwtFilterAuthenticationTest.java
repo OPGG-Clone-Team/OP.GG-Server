@@ -2,7 +2,7 @@ package com.example.opgg_clone_server.domain.global.login.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.opgg_clone_server.domain.global.jwt.service.JwtService;
+import com.example.opgg_clone_server.global.jwt.service.JwtService;
 import com.example.opgg_clone_server.domain.member.Member;
 import com.example.opgg_clone_server.domain.member.Role;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;

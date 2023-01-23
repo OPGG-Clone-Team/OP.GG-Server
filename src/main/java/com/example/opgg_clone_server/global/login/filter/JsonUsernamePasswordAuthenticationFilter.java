@@ -1,4 +1,4 @@
-package com.example.opgg_clone_server.domain.global.login.filter;
+package com.example.opgg_clone_server.global.login.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationServiceException;

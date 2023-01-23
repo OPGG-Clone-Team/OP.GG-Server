@@ -38,5 +38,5 @@ out/
 
 
 ## yml ##
-*.application.yml
-*.appilcation-jwt.yml
+#*.application.yml
+#*.appilcation-jwt.yml
