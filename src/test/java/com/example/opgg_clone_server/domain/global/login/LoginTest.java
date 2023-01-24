@@ -2,11 +2,14 @@ package com.example.opgg_clone_server.domain.global.login;
 
 import com.example.opgg_clone_server.domain.member.Member;
 import com.example.opgg_clone_server.domain.member.Role;
+import com.example.opgg_clone_server.domain.member.exception.MemberException;
+import com.example.opgg_clone_server.domain.member.exception.MemberExceptionType;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -26,6 +29,11 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @Transactional
 @SpringBootTest
@@ -52,6 +60,12 @@ public class LoginTest {
 
     private static String LOGIN_URL = "/login";
 
+    @Value("${jwt.access.header}")
+    private String accessHeader;
+    @Value("${jwt.refresh.header}")
+    private String refreshHeader;
+
+    private static String LOGIN_FAIL_MESSAGE = "fail";
 
     private void clear() {
         em.flush();
@@ -99,33 +113,61 @@ public class LoginTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
+
+        Member member = memberRepository.findByUsername(USERNAME).orElseThrow(()-> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER));
+
+        assertThat(member.getRefreshToken()).isNotNull();
     }
 
     @Test
     public void 로그인_실패_아이디틀림() throws Exception {
         //given
-        Map<String, String> map = getUsernamePasswordMap(USERNAME+"123", PASSWORD);
+        Map<String, String> map = new HashMap<>();
+        map.put("username",USERNAME+"123");
+        map.put("password",PASSWORD);
 
-        //when, then
-        MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
+
+        //when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(map)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                //.andExpect(status().isOk())//TODO 상테코드변경
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
+        //then
+        assertThat(result.getResponse().getHeader(accessHeader)).isNull();
+        assertThat(result.getResponse().getHeader(refreshHeader)).isNull();
+
     }
+
     @Test
     public void 로그인_실패_비밀번호틀림() throws Exception {
         //given
-        Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD+"123");
+        Map<String, String> map = new HashMap<>();
+        map.put("username",USERNAME);
+        map.put("password",PASSWORD+"123");
 
 
-        //when, then
-        MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
+        //when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(map)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                //.andExpect(status().isOk())//TODO 상태코드변경
+                .andExpect(status().isBadRequest())
                 .andReturn();
 
+
+        //then
+        assertThat(result.getResponse().getHeader(accessHeader)).isNull();
+        assertThat(result.getResponse().getHeader(refreshHeader)).isNull();
+
     }
+
     @Test
     public void 로그인_주소가_틀리면_FORBIDDEN() throws Exception {
         //given
@@ -139,16 +181,28 @@ public class LoginTest {
 
     }
 
+    // 로그인_데이터형식_JSON이_아니면_200
     @Test
-    public void 로그인_데이터형식_JSON이_아니면_200() throws Exception {
-        //given
-        Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
+    public void 로그인_데이터형식_JSON이_아니면_400() throws Exception {
 
-        //when, then
-        perform(LOGIN_URL, APPLICATION_FORM_URLENCODED, map)
+        //given
+        Map<String, String> map = new HashMap<>();
+        map.put("username",USERNAME);
+        map.put("password",PASSWORD);
+
+
+        //when
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .post(LOGIN_URL)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(objectMapper.writeValueAsString(map)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                //.andExpect(status().isOk())  TODO 상태코드변겅
+                .andExpect(status().isBadRequest())
                 .andReturn();
+
+        //then
+        assertThat(result.getResponse().getContentAsString()).isEqualTo(LOGIN_FAIL_MESSAGE);
     }
 
     @Test

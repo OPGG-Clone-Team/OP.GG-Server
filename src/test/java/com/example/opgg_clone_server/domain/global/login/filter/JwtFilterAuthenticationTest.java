@@ -65,7 +65,7 @@ public class JwtFilterAuthenticationTest {
 
     private static String LOGIN_URL = "/login";
 
-
+    private static String LOGIN_FAIL_MESSAGE = "fail";
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String BEARER = "Bearer ";
 
@@ -311,7 +311,11 @@ public class JwtFilterAuthenticationTest {
         MvcResult result = mockMvc.perform(post(LOGIN_URL)  //get인 경우 config에서 permitAll을 했기에 notFound
                         .header(refreshHeader, BEARER + refreshToken)
                         .header(accessHeader, BEARER + accessToken))
-                .andExpect(status().isOk())
+                //.andExpect(status().isOk())  TODO : 테스트코드수정
+                .andExpect(status().isBadRequest())
                 .andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).isEqualTo(LOGIN_FAIL_MESSAGE);
+
     }
 }

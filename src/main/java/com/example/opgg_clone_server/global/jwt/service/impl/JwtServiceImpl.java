@@ -104,13 +104,14 @@ public class JwtServiceImpl implements JwtService{
 
         setAccessTokenHeader(response, accessToken);
 
-
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
     }
 
 
-
+    // Header 정보에 다음과 같이 들어와야 jwt 인증이 가능
+    // Authorization : [accessToken]
+    // Authorization-refresh : [refreshToken]
     @Override
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(accessHeader)).filter(

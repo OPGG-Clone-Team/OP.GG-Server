@@ -67,6 +67,13 @@ class MemberControllerTest {
                 .andExpect(status().isOk());
     }
 
+    private void signUpFail(String signUpData) throws Exception {
+        mockMvc.perform(
+                        post(SIGN_UP_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(signUpData))
+                .andExpect(status().isBadRequest());
+    }
 
     @Value("${jwt.access.header}")
     private String accessHeader;
@@ -118,15 +125,20 @@ class MemberControllerTest {
         String noAgeSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, name, nickName, null));
 
         //when, then
-        signUp(noUsernameSignUpData);//예외가 발생하더라도 상태코드는 200
+/*        signUp(noUsernameSignUpData);//예외가 발생하더라도 상태코드는 200
         signUp(noPasswordSignUpData);//예외가 발생하더라도 상태코드는 200
         signUp(noNameSignUpData);//예외가 발생하더라도 상태코드는 200
         signUp(noNickNameSignUpData);//예외가 발생하더라도 상태코드는 200
-        signUp(noAgeSignUpData);//예외가 발생하더라도 상태코드는 200
+        signUp(noAgeSignUpData);//예외가 발생하더라도 상태코드는 200*/
+
+        signUpFail(noUsernameSignUpData);//예외가 발생하면 상태코드는 400
+        signUpFail(noPasswordSignUpData);//예외가 발생하면 상태코드는 400
+        signUpFail(noNameSignUpData);//예외가 발생하면 상태코드는 400
+        signUpFail(noNickNameSignUpData);//예외가 발생하면 상태코드는 400
+        signUpFail(noAgeSignUpData);//예외가 발생하면 상태코드는 400
 
         assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
-
 
 
 
@@ -248,16 +260,14 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                //.andExpect(status().isOk());//TODO 테스트코드 수정
+                .andExpect(status().isBadRequest());//TODO 테스트코드 수정
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
         assertThat(passwordEncoder.matches(password, member.getPassword())).isTrue();
         assertThat(passwordEncoder.matches(password+"!@#@!#@!#", member.getPassword())).isFalse();
     }
-
-
-
 
     @Test
     public void 비밀번호수정_실패_바꾸려는_비밀번호_형식_올바르지않음() throws Exception {
@@ -280,14 +290,14 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                //.andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
         assertThat(passwordEncoder.matches(password, member.getPassword())).isTrue();
         assertThat(passwordEncoder.matches("123123", member.getPassword())).isFalse();
     }
-
 
 
 
@@ -338,7 +348,8 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                //.andExpect(status().isOk()); //TODO 테스트코드 수정
+                .andExpect(status().isBadRequest());
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
@@ -346,8 +357,6 @@ class MemberControllerTest {
 
 
     }
-
-
 
     @Test
     public void 회원탈퇴_실패_권한이없음() throws Exception {
@@ -476,14 +485,13 @@ class MemberControllerTest {
                         get("/member/2211")
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER + accessToken))
-                .andExpect(status().isOk()).andReturn();
+                //.andExpect(status().isOk()).andReturn();//TODO: 테스트코드 수정 ok에서 변겅
+                .andExpect(status().isNotFound()).andReturn();
 
         //then
         Map<String, Integer> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
         assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());//빈 문자열
     }
-
-
 
     @Test
     public void 회원정보조회_실패_JWT없음() throws Exception {

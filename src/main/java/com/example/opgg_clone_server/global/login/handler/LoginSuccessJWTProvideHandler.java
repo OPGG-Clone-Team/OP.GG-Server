@@ -1,5 +1,6 @@
 package com.example.opgg_clone_server.global.login.handler;
 
+import com.example.opgg_clone_server.domain.member.Member;
 import com.example.opgg_clone_server.global.jwt.service.JwtService;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,8 +30,13 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
 
+
         memberRepository.findByUsername(username).ifPresent(
-                member -> member.updateRefreshToken(refreshToken)
+                m -> {
+                    m.updateRefreshToken(refreshToken);
+                    // TODO : 나중에 없애기
+                    memberRepository.save(m);
+                }
         );
 
         log.info( "로그인에 성공합니다. username: {}" ,username);

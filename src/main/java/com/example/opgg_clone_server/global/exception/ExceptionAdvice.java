@@ -5,14 +5,19 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.net.BindException;
 
 @RestControllerAdvice
 @Slf4j
 public class ExceptionAdvice {
 
-    // 공통예외처리
+
+    //HttpMessageNotReadableException  => json 파싱 오류
+
     @ExceptionHandler(BaseException.class)
     public ResponseEntity handleBaseEx(BaseException exception){
         log.error("BaseException errorMessage(): {}",exception.getExceptionType().getErrorMessage());
@@ -21,12 +26,31 @@ public class ExceptionAdvice {
         return new ResponseEntity(new ExceptionDto(exception.getExceptionType().getErrorCode()),exception.getExceptionType().getHttpStatus());
     }
 
-    // MemberService에서 오류 났을 때 예외처리
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity handleMemberEx(Exception exception){
-        exception.printStackTrace();
-        return new ResponseEntity(HttpStatus.OK);
+
+    //@Valid 에서 예외 발생
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity handleValidEx(BindException exception){
+
+        log.error("@ValidException 발생! {}", exception.getMessage() );
+        return new ResponseEntity(new ExceptionDto(2000),HttpStatus.BAD_REQUEST);
     }
+
+    //HttpMessageNotReadableException  => json 파싱 오류
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity httpMessageNotReadableExceptionEx(HttpMessageNotReadableException exception){
+
+        log.error("Json을 파싱하는 과정에서 예외 발생! {}", exception.getMessage() );
+        return new ResponseEntity(new ExceptionDto(3000),HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity handleMemberEx(Exception exception) {
+
+        exception.printStackTrace();
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
+
 
     @Data
     @AllArgsConstructor
