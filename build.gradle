@@ -34,7 +34,7 @@ dependencies {
 	implementation 'com.querydsl:querydsl-jpa:5.0.0'
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: '5.0.0'
 
-	//Test 환경에서 사용하는 DB
+	//Prod 환경에서 임시로 사용
 	runtimeOnly 'com.h2database:h2'
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
