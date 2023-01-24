@@ -3,9 +3,7 @@ package com.example.opgg_clone_server.domain.post;
 import com.example.opgg_clone_server.domain.BaseTimeEntity;
 import com.example.opgg_clone_server.domain.comment.Comment;
 import com.example.opgg_clone_server.domain.member.Member;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -20,6 +18,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@AllArgsConstructor
+@Builder
 public class Post extends BaseTimeEntity {
 
     @Id
@@ -46,6 +46,7 @@ public class Post extends BaseTimeEntity {
 
 
     //== 게시글을 삭제하면 달려있는 댓글 모두 삭제 ==//
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 

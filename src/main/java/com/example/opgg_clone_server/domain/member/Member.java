@@ -54,9 +54,11 @@ public class Member extends BaseTimeEntity {
     // cf) mappedBy 속성을 지정하여, 해당 객체 연관 관계의 주인을 지정해야 함.
     //     연관 관계의 주인은 외래 키를 가지고 있는 엔티티이다.
     // ex) 아래 예시와 같이 List<Post> postList 객체는 포스팅 객체를 담은 배열이므로, 해당 객체에 대한 주인은 Post 의 writer가 됨
+    @Builder.Default
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 

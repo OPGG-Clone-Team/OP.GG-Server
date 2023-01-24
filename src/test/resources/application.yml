@@ -1,9 +1,10 @@
 spring:
+  profiles:
+    include: jwt
+
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/board
-    username: root
-    password: 1234
+    driver-class-name: org.h2.Driver
+    username: sa
 
   data:
     web:
@@ -23,13 +24,14 @@ spring:
         default_batch_fetch_size: 500 #배치 사이즈 (Collection 조회 최적화)
 
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
 
     show-sql: true
     open-in-view: false #OSIV 사용하지 않기
 
-  profiles:
-    include: jwt
+  h2:
+    console:
+      enabled: true
 
 logging:
   level:
