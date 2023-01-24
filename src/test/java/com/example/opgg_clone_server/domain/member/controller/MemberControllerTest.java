@@ -3,20 +3,16 @@ package com.example.opgg_clone_server.domain.member.controller;
 import com.example.opgg_clone_server.domain.member.Member;
 import com.example.opgg_clone_server.domain.member.Role;
 import com.example.opgg_clone_server.domain.member.dto.MemberSignUpDto;
+import com.example.opgg_clone_server.domain.member.exception.MemberExceptionType;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
-import com.example.opgg_clone_server.domain.member.repository.service.MemberService;
+import com.example.opgg_clone_server.domain.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,8 +23,6 @@ import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,14 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MemberControllerTest {
 
 
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    EntityManager em;
-    @Autowired
-    MemberService memberService;
-    @Autowired
-    MemberRepository memberRepository;
+    @Autowired MockMvc mockMvc;
+    @Autowired EntityManager em;
+    @Autowired MemberService memberService;
+    @Autowired MemberRepository memberRepository;
     ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -61,21 +51,8 @@ class MemberControllerTest {
     private String nickName = "shinD cute";
     private Integer age = 22;
 
-    @BeforeEach
-    private void setMember() throws Exception {
-        Member member = Member.builder()
-                .username("defaultUser")
-                .password("rlathfals12#")
-                .role(Role.USER)
-                .age(23)
-                .name("default")
-                .nickName("디폴트")
-                .build();
-        member.encodePassword(passwordEncoder);
 
-        Member saveMember = memberRepository.save(member);
-        clear();
-    }
+
 
     private void clear(){
         em.flush();
@@ -125,7 +102,7 @@ class MemberControllerTest {
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
         assertThat(member.getName()).isEqualTo(name);
-        assertThat(memberRepository.findAll().size()).isEqualTo(2);
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
     }
 
 
@@ -147,8 +124,7 @@ class MemberControllerTest {
         signUp(noNickNameSignUpData);//예외가 발생하더라도 상태코드는 200
         signUp(noAgeSignUpData);//예외가 발생하더라도 상태코드는 200
 
-        // Test 전 샘플 데이터 하나 넣어둠
-        assertThat(memberRepository.findAll().size()).isEqualTo(1);
+        assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
 
 
@@ -182,8 +158,7 @@ class MemberControllerTest {
         assertThat(member.getName()).isEqualTo(name+"변경");
         assertThat(member.getNickName()).isEqualTo(nickName+"변경");
         assertThat(member.getAge()).isEqualTo(age+1);
-        // 기본 데이터 하나 넣어두기
-        assertThat(memberRepository.findAll().size()).isEqualTo(2);
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
 
     }
 
@@ -214,7 +189,7 @@ class MemberControllerTest {
         assertThat(member.getName()).isEqualTo(name+"변경");
         assertThat(member.getNickName()).isEqualTo(nickName);
         assertThat(member.getAge()).isEqualTo(age);
-        assertThat(memberRepository.findAll().size()).isEqualTo(2);
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
 
     }
 
@@ -460,8 +435,6 @@ class MemberControllerTest {
     @Test
     public void 회원정보조회_성공() throws Exception {
         //given
-
-
         String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, name, nickName, age));
         signUp(signUpData);
 
@@ -479,7 +452,7 @@ class MemberControllerTest {
 
 
         //then
-         Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        Map<String, Object> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
         assertThat(member.getAge()).isEqualTo(map.get("age"));
         assertThat(member.getUsername()).isEqualTo(map.get("username"));
@@ -506,7 +479,8 @@ class MemberControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        assertThat(result.getResponse().getContentAsString()).isEqualTo("");//빈 문자열
+        Map<String, Integer> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());//빈 문자열
     }
 
 

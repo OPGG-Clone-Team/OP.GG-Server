@@ -1,7 +1,7 @@
 package com.example.opgg_clone_server.domain.member.controller;
 
 import com.example.opgg_clone_server.domain.member.dto.*;
-import com.example.opgg_clone_server.domain.member.repository.service.MemberService;
+import com.example.opgg_clone_server.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

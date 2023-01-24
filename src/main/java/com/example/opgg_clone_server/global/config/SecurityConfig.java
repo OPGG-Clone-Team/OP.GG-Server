@@ -6,7 +6,7 @@ import com.example.opgg_clone_server.global.login.filter.JwtAuthenticationProces
 import com.example.opgg_clone_server.global.login.handler.LoginFailureHandler;
 import com.example.opgg_clone_server.global.login.handler.LoginSuccessJWTProvideHandler;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
-import com.example.opgg_clone_server.domain.member.repository.service.impl.LoginService;
+import com.example.opgg_clone_server.domain.member.service.impl.LoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

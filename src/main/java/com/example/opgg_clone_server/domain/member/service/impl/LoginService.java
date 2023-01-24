@@ -1,4 +1,4 @@
-package com.example.opgg_clone_server.domain.member.repository.service.impl;
+package com.example.opgg_clone_server.domain.member.service.impl;
 
 import com.example.opgg_clone_server.domain.member.Member;
 import com.example.opgg_clone_server.domain.member.repository.MemberRepository;
