@@ -7,13 +7,17 @@ spring:
 
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/test
+#    url: jdbc:h2:tcp://localhost/~/test
+    url: jdbc:h2:mem:test
     username: sa
     password:
     data:
       web:
         pageable:
           default-page-size: 20  #페이징 할 때 기본값, 20개씩 조회
+    h2:
+      console:
+        enabled: true
 
   servlet:
     multipart:
